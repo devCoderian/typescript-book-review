@@ -1,15 +1,11 @@
+import { push } from "connected-react-router";
+import { AnyAction } from "redux";
 import { Action, createActions, handleActions } from "redux-actions";
-import { put, takeEvery, call} from "redux-saga/effects";
+import { put, takeEvery, call, select} from "redux-saga/effects";
 import TokenService from "../../services/TokenService";
 import UserService from "../../services/UserService";
-import { LoginReqType } from "../../types";
+import { LoginReqType,AuthState } from "../../types";
 
-interface AuthState {
-     token: string | null;
-     loading: boolean;
-     error: Error | null;
-     
-}
 const initialState: AuthState = {
     token: null,
     loading: false,
@@ -51,8 +47,10 @@ export function* authSaga(){
     yield takeEvery(`${prefix}/LOGIN`, loginSaga)
     yield takeEvery(`${prefix}/LOGOUT`, logoutSaga)
 }
-
-function* loginSaga(action:Action<LoginReqType>){
+interface LoginSagaAction extends AnyAction {
+    payload: LoginReqType;
+  }
+function* loginSaga(action:LoginSagaAction){
     try {
         yield put(pending());
         const token:string = yield call(UserService.login, action.payload);
@@ -60,10 +58,23 @@ function* loginSaga(action:Action<LoginReqType>){
         TokenService.set(token);
         yield put(success(token))
         //push
-    } catch (error) {
-        yield put(fail(new Error(error?.response?.data?.error || 'UNKNOWN_ERROR')))
+        yield put(push("/"));
+    } catch (error:any) {
+        yield put(fail(new Error(error?.response?.data?.error || 'UNKNOWN_ERROR')));
     }
 }
+
+// https://velog.io/@devstefancho/typescript-Object-is-of-type-unknown.ts2571-error-object
 function* logoutSaga(){
-    
+    try {
+        yield put(pending());
+        const token:string = yield select(state => state.auth.token);
+        yield call(UserService.logout, token)
+        TokenService.set(token);
+    } catch (error:any) {
+       
+    }finally{
+        TokenService.remove();
+        yield put(success(null));
+    }
 }
