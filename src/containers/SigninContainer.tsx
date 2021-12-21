@@ -1,6 +1,14 @@
 import Signin from "../components/Signin"
 import { useCallback } from "react"
+import { useDispatch } from "react-redux"
+import { login as LoginStart} from "../redux/modules/auth";
+
+
 export default function SigninContainer(){
-    const login = useCallback((reqData) => {}, [])
-    return <Signin />
+    const dispatch = useDispatch();
+    const login = useCallback((reqData) => {
+        dispatch(LoginStart(reqData))
+    }, [dispatch])
+    return <Signin login= {login}/>
+    //  <Signin />
 }

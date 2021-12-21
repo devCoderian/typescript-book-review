@@ -1,57 +1,72 @@
 import { Row, Col, Input, Button} from "antd"
 import styles from "./Signin.module.css"
 import { useRef } from "react";
+import SigninContainer from "../containers/SigninContainer";
 import { LoginReqType } from '../types'
+
 interface SigninProps{
-    login: (reaData: LoginReqType) => void;
+    login: (reqData: LoginReqType) => void;
 }
-const Signin: React.FC<SigninProps> = ({login}) =>{
+const Signin:React.FC<SigninProps> = ({login}) =>{
 
     const emailRef = useRef<Input>(null);
     const passwordRef = useRef<Input>(null);
     return (
-     <Row align = "middle" className = {styles.signin_row}>
-         <Col span = {24} >
-                    <Row>
-                        <Col span = {12}></Col>
-                        <Col span = {12}>
-                            <div>My Books</div>
-                            <div>Please Note Your Opinion</div>
-                            <div />
-                            <div>Email
-                                <span>*</span>
-                            </div>
-                            <div>
-                                <Input
-                                placeholder = "Email"
-                                autoComplete = "email"
-                                name = "email" 
-                                ref = {emailRef} />
-                            </div>
-                            <div>Password
-                                <span>*</span>
-                            </div>
-                            <div>
-                                <Input
-                                type = "password"
-                                autoComplete = "current-password"
-                                name = "password" 
-                                ref = {passwordRef} />
-                            </div>
-                            <div>
-                                <Button size = "large" onClick = {click}>Sign in</Button>
-                            </div>
-                        </Col>
-                    </Row>
-         </Col>
-     </Row>
-    );
+    <Row align = "middle" className = {styles.signin_row}>
+        <Col span = {24}>
+            <Row  className = {styles.signin_content}>
+                <Col span = {12}>
+                    <img
+                    src =''
+                    alt ="signin"
+                    className = {styles.signin_bg}
+                    />
+                </Col>
+                <Col span = {12}>
+                    <div className = {styles.signin_title}>MyBooks</div>
+                    <div className = {styles.signin_subtitle}>Please Not Your Option</div>
+                    <div />
+                    <div className = {styles.email_title}>Email
+                        <span className = {styles.required}>* </span> 
+                    </div>
+                    <div className = {styles.input_area}>
+                        <Input
+                        placeholder ="Email"
+                        autoComplete = "email"
+                        name ="email"
+                        className = {styles.input}
+                        ref = {emailRef}
+                        />
+                    </div>
+                    <div className = {styles.password_title}>Password
+                        <span  className = {styles.required}>* </span> 
+                    </div>
+                    <div className = {styles.input_area}>
+                        <Input
+                        type = "password"
+                        autoComplete = "current-password"
+                        name ="password"
+                        className = {styles.input}
+                        ref = {passwordRef}
+                        />
+                    </div>
+                    <div className = {styles.button_area}> 
+                        <Button size = "large" className = {styles.button}
+                        onClick = {click}>Sign in</Button>
+                    </div>
+                </Col>
+            </Row>
+        </Col>
+    </Row>
+    )
+
     function click(){
-        const email = emailRef.current!.state.value; //null을 제외한 인풋
+        const email = emailRef.current!.state.value;
         const password = passwordRef.current!.state.value;
 
         login({email, password});
     }
+  
 }
 
 export default Signin
