@@ -1,31 +1,41 @@
-import { applyMiddleware, createStore } from "redux"
-import { composeWithDevTools } from "redux-devtools-extension";
-import reducer from "./modules/reducer";
-import createSagaMiddleware from "@redux-saga/core";
-import rootSaga from "./modules/rootSaga";
+
+import { createStore, applyMiddleware } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
+import { createBrowserHistory } from 'history';
 import { routerMiddleware } from 'connected-react-router';
-import history from "../history";
-import TokenService from "../services/TokenService";
+import createSagaMiddleware from 'redux-saga';
 
+import rootReducer from './modules/reducer';
+import rootSaga from './modules/rootSaga';
+import TokenService from '../services/TokenService';
 
-const create = () =>{
+export const history = createBrowserHistory();
+const sagaMiddleware = createSagaMiddleware(); // 2. saga 미들웨어 생성
 
-    const token = TokenService.get();
-    const sagaMiddleware = createSagaMiddleware();
-    //스토어 만들기 createStore함수로 rootreducer가 필요하다.
+const create = () => {
+  const token = TokenService.get();
+
+  const store = createStore(
+      
+  //스토어 만들기 createStore함수로 rootreducer가 필요하다.
     //미들웨어를 설정하기 위해 enhancer -> applyMiddleware
-    const store = createStore(
-        reducer(history),{
-            auth:{
-                token,
-                loading: false,
-                error: null
-            }
-        },
-         composeWithDevTools(applyMiddleware(sagaMiddleware, routerMiddleware(history)))
-         );
-    sagaMiddleware.run(rootSaga);
-    return store;
-}
+    rootReducer(history),
+    {
+      auth: {
+        token,
+        loading: false,
+        error: null,
+      },
+    },
+    composeWithDevTools(
+      applyMiddleware(routerMiddleware(history), sagaMiddleware),
+    ),
+  );
+
+  sagaMiddleware.run(rootSaga);
+
+  return store;
+};
 
 export default create;
+
